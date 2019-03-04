@@ -14,6 +14,10 @@ RUN set -xe \
 	&& rm elixir-src.tar.gz \
 	&& cd /usr/local/src/elixir \
 	&& make install clean
+	&& git clone https://github.com/JohnB/docker_test2
+	&& cd docker_test2
+	&& mix deps.get
+	&& cd assets && npm install
+	&& cd ..
 
-CMD ["iex"]
-## from https://raw.githubusercontent.com/c0b/docker-elixir/5570afaa6de095a86e98457e1ad1351f92ccfe26/1.8/Dockerfile
+CMD ["mix phx.server"]
