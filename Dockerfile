@@ -1,23 +1,28 @@
-FROM erlang:21
+FROM bitwalker/alpine-erlang:21.0
 
-# elixir expects utf8.
-ENV ELIXIR_VERSION="v1.8.1" \
-	LANG=C.UTF-8
+ENV ELIXIR_VERSION 1.6.6
 
-RUN set -xe \
-	&& ELIXIR_DOWNLOAD_URL="https://github.com/elixir-lang/elixir/archive/${ELIXIR_VERSION}.tar.gz" \
-	&& ELIXIR_DOWNLOAD_SHA256="de8c636ea999392496ccd9a204ccccbc8cb7f417d948fd12692cda2bd02d9822" \
-	&& curl -fSL -o elixir-src.tar.gz $ELIXIR_DOWNLOAD_URL \
-	&& echo "$ELIXIR_DOWNLOAD_SHA256  elixir-src.tar.gz" | sha256sum -c - \
-	&& mkdir -p /usr/local/src/elixir \
-	&& tar -xzC /usr/local/src/elixir --strip-components=1 -f elixir-src.tar.gz \
-	&& rm elixir-src.tar.gz \
-	&& cd /usr/local/src/elixir \
-	&& make install clean
-	&& git clone https://github.com/JohnB/docker_test2
-	&& cd docker_test2
-	&& mix deps.get
-	&& cd assets && npm install
-	&& cd ..
+RUN apk --no-cache upgrade
+RUN apk --no-cache add git make
+RUN apk --no-cache add openssl
+RUN apk --no-cache add inotify-tools
 
-CMD ["mix phx.server"]
+RUN apk --no-cache add --virtual build-dependencies wget ca-certificates && \
+    wget --no-check-certificate https://github.com/elixir-lang/elixir/releases/download/v${ELIXIR_VERSION}/Precompiled.zip && \
+    mkdir -p /opt/elixir-${ELIXIR_VERSION}/ && \
+    unzip Precompiled.zip -d /opt/elixir-${ELIXIR_VERSION}/ && \
+    rm Precompiled.zip && \
+    apk --no-cache del build-dependencies 
+
+RUN apk --no-cache add nodejs-npm
+
+ENV PATH $PATH:/opt/elixir-${ELIXIR_VERSION}/bin
+
+RUN mix local.hex --force
+RUN mix local.rebar --force
+RUN git clone https://github.com/JohnB/docker_test2.git
+RUN cd /opt/app/docker_test2 && mix deps.get
+RUN cd /opt/app/docker_test2/assets && npm install
+RUN cd /opt/app/docker_test2 && mix phx.server
+
+CMD ["/bin/ash"]
