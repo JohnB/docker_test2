@@ -22,6 +22,7 @@ RUN mix local.hex --force
 RUN mix local.rebar --force
 RUN git clone https://github.com/JohnB/docker_test2.git
 RUN cd /opt/app/docker_test2 && mix deps.get
+RUN cd /opt/app/docker_test2 && mix compile
 RUN cd /opt/app/docker_test2/assets && npm install
 
 CMD ["/bin/ash"]
