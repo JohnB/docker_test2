@@ -23,6 +23,5 @@ RUN mix local.rebar --force
 RUN git clone https://github.com/JohnB/docker_test2.git
 RUN cd /opt/app/docker_test2 && mix deps.get
 RUN cd /opt/app/docker_test2/assets && npm install
-RUN cd /opt/app/docker_test2 && mix phx.server
 
 CMD ["/bin/ash"]
