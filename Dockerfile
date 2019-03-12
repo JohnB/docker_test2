@@ -25,4 +25,4 @@ RUN cd /opt/app/docker_test2 && mix deps.get
 RUN cd /opt/app/docker_test2 && mix compile
 RUN cd /opt/app/docker_test2/assets && npm install
 
-CMD ["./docker_test2/lib/docker_run_script.sh"]
+CMD /bin/ash ./docker_test2/lib/docker_run_script.sh
