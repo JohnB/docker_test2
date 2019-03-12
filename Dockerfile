@@ -25,4 +25,5 @@ RUN cd /opt/app/docker_test2 && mix deps.get
 RUN cd /opt/app/docker_test2 && mix compile
 RUN cd /opt/app/docker_test2/assets && npm install
 
-CMD /bin/ash /opt/app/docker_run_script
+WORKDIR /opt/app/docker_test2
+CMD mix phx.server
